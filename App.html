@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>ToDo</title>
+  <script src="https://unpkg.com/react@15.3.2/dist/react.js"></script>
+  <script src="https://unpkg.com/react-dom@15.3.2/dist/react-dom.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+
+  <link rel="stylesheet" href="todo.css">
+</head>
+
+<body>
+
+  <div id="container">
+
+  </div>
+
+  <script type="text/babel">
+const appContainer = document.querySelector('#container');
+
+const AppHead = ({addTask}) => {
+ let input;
+
+ return (
+  <div className='input-group'>
+    <input ref={node => {
+       input = node;
+     }} className='form' type='text' placeholder='enter task' />
+    <button onClick={() => {
+       addTask(input.value);
+       input.value = '';
+     }} className='button'>
+       Add Task
+    </button>
+ </div>
+ );
+};
+
+const Task = ({task, remove}) => {
+ return (
+  <li className='item'>{task.text} <button className='remove' onClick={() => {remove(task.id)}}>delete</button></li>
+ );
+}
+
+const AppList = ({tasks,remove}) => {
+ const taskNode = tasks.map((task) => {
+  return (<Task task={task} key={task.id} remove={remove}/>)
+ });
+
+ return (<ul className='list'>{taskNode}</ul>);
+}
+
+window.id = 0;
+
+class TaskApp extends React.Component {
+ constructor(prop) {
+  super(prop);
+
+  this.state = {
+   data: []
+  }
+ }
+
+ addTask(val) {
+  const task = {
+   text: val,
+   id: window.id++
+  }
+
+  if (val.length > 0) this.state.data.push(task);
+
+  this.setState({
+   data: this.state.data
+  });
+ }
+
+ removeTask(id) {
+  const taskCollection = this.state.data.filter((task) => {
+   if (task.id !== id) return task;
+  });
+
+  this.setState({
+   data: taskCollection
+  });
+ }
+
+ render() {
+
+ return (
+  <div>
+   <AppHead addTask={this.addTask.bind(this)}/>
+
+   <AppList
+    tasks={this.state.data}
+    remove={this.removeTask.bind(this)}
+   />
+  </div>
+ );
+ }
+}
+
+ReactDOM.render(<TaskApp />, appContainer);
+
+
+
+  </script>
+</body>
+
+</html>
